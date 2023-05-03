@@ -213,14 +213,18 @@ export class Directus<T extends TypeMap, IAuthHandler extends IAuth = Auth> impl
 		return this._graphql || (this._graphql = new GraphQLHandler(this.transport));
 	}
 
-	singleton<C extends string, I = TypeOf<T, C>>(collection: C): ISingleton<I> {
+	singleton<C extends string, I = TypeOf<T, C>>(collection: keyof T): ISingleton<I> {
+		const collectionName = collection as string;
 		return (
-			this._singletons[collection] ||
-			(this._singletons[collection] = new SingletonHandler<I>(collection, this.transport))
+			this._singletons[collectionName] ||
+			(this._singletons[collectionName] = new SingletonHandler<I>(collectionName as string, this.transport))
 		);
 	}
 
-	items<C extends string, I = TypeOf<T, C>>(collection: C): IItems<I> {
-		return this._items[collection] || (this._items[collection] = new ItemsHandler<I>(collection, this.transport));
+	items<C extends string, I = TypeOf<T, C>>(collection: keyof T): IItems<I> {
+		const collectionName = collection as string;
+		return (
+			this._items[collectionName] || (this._items[collectionName] = new ItemsHandler<I>(collectionName, this.transport))
+		);
 	}
 }
